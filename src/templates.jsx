@@ -4,14 +4,14 @@ import R from 'ramda'
 export const MessageBody = (props) =>
   <div>
     <h1>@{ props.feed }</h1>
-    { props.children }
+    { React.Children.toArray(props.children).map((c,i) => <div key={i}><hr/>{c}</div>) }
   </div> 
 
 export const Tweet = (props) => 
   <div>
     <hr/>
     <p><a href={`https://twitter.com/${props.feed}/status/${props.id}`}>{ `${props.name} @${props.feed}` }</a></p>
-    <p dangerouslySetInnerHTML={{ __html: props.text  }}></p>
+    <p dangerouslySetInnerHTML={{__html: props.text}}></p>
     <p>{ new Date(props.date).toLocaleString() }</p>
     { props.in_reply_to_status ?
         <blockquote style={{ borderLeft: '1px solid darkgrey' }}>
@@ -19,7 +19,7 @@ export const Tweet = (props) =>
         </blockquote>
       : null
     }
-    { props.images.map( (img, i) => <img key={ i } src={ img.media_url_https } />) }
+    { props.images.map((img, i) => <img key={i} src={img.media_url_https} />) }
   </div>
 
 Tweet.propTypes = {
@@ -33,9 +33,9 @@ Tweet.propTypes = {
 }
 
 function linkify(text: string): string {
-  const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/g
-  const twitterRegex = /@\w+/g
-  const hashtagRegex = /#\w+/g
+  const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/ig
+  const twitterRegex = /#[\u00C0-\u017Fa-z]+/ig
+  const hashtagRegex = /#\w+/ig
   return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a`)
              .replace(twitterRegex, (t) => `<a href=https://twitter.com/${t}>${t}</a>`)
              .replace(hashtagRegex, (t) => `<a href=https://twitter.com/hashtag/${R.tail(t)}>${t}</a>`)             
@@ -50,7 +50,7 @@ export function renderTweet(tweet: Object) {
     },
     text,
     created_at,
-    entities: { media=[] },
+    entities: {media=[]},
     in_reply_to_status
   } = tweet
   const images = media.filter(m => m.type==='photo')
