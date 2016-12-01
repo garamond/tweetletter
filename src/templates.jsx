@@ -3,13 +3,12 @@ import R from 'ramda'
 
 export const MessageBody = (props) =>
   <div>
-    <h2>@{ props.feed }</h2>
+    <h1>@{ props.feed }</h1>
     { React.Children.toArray(props.children).map((c,i) => <div key={i}><hr/>{c}</div>) }
   </div> 
 
 export const Tweet = (props) => 
   <div>
-    <hr/>
     <p><a href={`https://twitter.com/${props.feed}/status/${props.id}`}>{ `${props.name} (@${props.feed})` }</a></p>
     <p dangerouslySetInnerHTML={{__html: props.text}}></p>
     <p>{ new Date(props.date).toLocaleString() }</p>
@@ -33,8 +32,8 @@ Tweet.propTypes = {
 }
 
 function linkify(text: string): string {
-  const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/ig
-  const twitterRegex = /#[\u00C0-\u017Fa-z]+/ig
+  const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/g
+  const twitterRegex = /@\w+/g
   return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a`)
              .replace(twitterRegex, (t) => `<a href=https://twitter.com/${t}>${t}</a>`)
 }
