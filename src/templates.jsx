@@ -9,7 +9,6 @@ export const MessageBody = (props) =>
 
 export const Tweet = (props) => 
   <div>
-    <hr/>
     <p><a href={`https://twitter.com/${props.feed}/status/${props.id}`}>{ `${props.name} @${props.feed}` }</a></p>
     <p dangerouslySetInnerHTML={{__html: props.text}}></p>
     <p>{ new Date(props.date).toLocaleString() }</p>
@@ -34,10 +33,8 @@ Tweet.propTypes = {
 
 function linkify(text: string): string {
   const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/ig
-  const twitterRegex = /#[\u00C0-\u017Fa-z]+/ig
   const hashtagRegex = /#\w+/ig
   return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a`)
-             .replace(twitterRegex, (t) => `<a href=https://twitter.com/${t}>${t}</a>`)
              .replace(hashtagRegex, (t) => `<a href=https://twitter.com/hashtag/${R.tail(t)}>${t}</a>`)             
 }
 
