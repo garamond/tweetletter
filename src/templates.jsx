@@ -3,13 +3,14 @@ import R from 'ramda'
 
 export const MessageBody = (props) =>
   <div>
-    <h1>@{ props.feed }</h1>
+    <h2>@{ props.feed }</h2>
     { React.Children.toArray(props.children).map((c,i) => <div key={i}><hr/>{c}</div>) }
   </div> 
 
 export const Tweet = (props) => 
   <div>
-    <p><a href={`https://twitter.com/${props.feed}/status/${props.id}`}>{ `${props.name} @${props.feed}` }</a></p>
+    <hr/>
+    <p><a href={`https://twitter.com/${props.feed}/status/${props.id}`}>{ `${props.name} (@${props.feed})` }</a></p>
     <p dangerouslySetInnerHTML={{__html: props.text}}></p>
     <p>{ new Date(props.date).toLocaleString() }</p>
     { props.in_reply_to_status ?
@@ -33,9 +34,9 @@ Tweet.propTypes = {
 
 function linkify(text: string): string {
   const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/ig
-  const hashtagRegex = /#\w+/ig
+  const twitterRegex = /#[\u00C0-\u017Fa-z]+/ig
   return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a`)
-             .replace(hashtagRegex, (t) => `<a href=https://twitter.com/hashtag/${R.tail(t)}>${t}</a>`)             
+             .replace(twitterRegex, (t) => `<a href=https://twitter.com/${t}>${t}</a>`)
 }
 
 export function renderTweet(tweet: Object) {
