@@ -40,10 +40,12 @@ feeds.map( feed => {
       state = R.assoc(feed, R.last(ids) || state[feed], state);
       return res;
     })
-    .then( res => Promise.all(res.data.map( async (tweet) => {
-      let t = await resolveReply(tweet)
-      return renderTweet(lib.processTweet(t))
-    })))
+    .then( res => Promise.all(res.data
+      .filter(d => (!d.in_reply_to_status_id_str || !options.filterReplies))
+      .map( async (tweet) => {
+        let t = await resolveReply(tweet)
+        return renderTweet(lib.processTweet(t))
+      })))
     .then( elements => {
       if (elements.length > 0) {
         const message = {

@@ -34,7 +34,7 @@ Tweet.propTypes = {
 function linkify(text: string): string {
   const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/g
   const twitterRegex = /@\w+/g
-  return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a`)
+  return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a>`)
              .replace(twitterRegex, (t) => `<a href=https://twitter.com/${t}>${t}</a>`)
 }
 
