@@ -4,6 +4,7 @@
   "description": "Send Twitter feed updates via email",
   "main": "src/index.js",
   "scripts": {
+    "build": "jest && webpack -p",
     "test": "jest"
   },
   "repository": {

@@ -12,4 +12,13 @@ function writeStatus(id, prefix='.') {
     })
 }
 
-writeStatus(process.argv[2])
+function printFriends() {
+  twitter.get('friends/list')
+    .then(res => {
+      console.log(res.data)
+    })
+    .catch(err =>
+      console.error(err)
+    )
+}
+
