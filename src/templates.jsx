@@ -1,23 +1,24 @@
+// @flow
+
 import React from 'react';
+import { renderToString } from 'react-dom/server';
 import R from 'ramda'
 
-export const MessageBody = (props) =>
+const MessageBody = (props: Object) =>
   <div>
     <h1>@{ props.feed }</h1>
     { React.Children.toArray(props.children).map((c,i) => <div key={i}><hr/>{c}</div>) }
-  </div> 
+  </div>
 
-export const Tweet = (props) => 
+const Tweet = (props: Object) =>
   <div>
-    <p><a href={`https://twitter.com/${props.feed}/status/${props.id}`}>{ `${props.name} (@${props.feed})` }</a></p>
+    <p>
+      <a href={`https://twitter.com/${props.feed}/status/${props.id}`}>
+        { `${props.name} (@${props.feed})` }
+      </a>
+    </p>
     <p dangerouslySetInnerHTML={{__html: props.text}}></p>
     <p>{ new Date(props.date).toLocaleString() }</p>
-    { props.in_reply_to_status ?
-        <blockquote style={{ borderLeft: '1px solid darkgrey' }}>
-          { renderTweet(props.in_reply_to_status) }
-        </blockquote>
-      : null
-    }
     { props.images.map((img, i) => <img key={i} src={img.media_url_https} />) }
   </div>
 
@@ -33,12 +34,16 @@ Tweet.propTypes = {
 
 function linkify(text: string): string {
   const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/g
-  const twitterRegex = /@\w+/g
+  const twitterRegex = /\s+(@\w+)/g
   return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a>`)
-             .replace(twitterRegex, (t) => `<a href=https://twitter.com/${t}>${t}</a>`)
+             .replace(twitterRegex, `<a href=https://twitter.com/$1>$1</a>`)
 }
 
-export function renderTweet(tweet: Object) {
+export function renderMessage(feed: string, tweets: Array<Object>): string {
+  return renderToString(<MessageBody feed={ feed }>{ tweets.map(renderTweet) }</MessageBody>)
+}
+
+function renderTweet(tweet: Object): Object {
   const {
     id_str,
     user: {
@@ -47,16 +52,14 @@ export function renderTweet(tweet: Object) {
     },
     text,
     created_at,
-    entities: {media=[]},
-    in_reply_to_status
+    entities: {media=[]}
   } = tweet
   const images = media.filter(m => m.type==='photo')
-  return <Tweet key={ id_str } 
+  return <Tweet key={ id_str }
             feed={ screen_name }
-            name={ name } 
-            id={ id_str } 
+            name={ name }
+            id={ id_str }
             text={ linkify(text) }
             date={ created_at }
-            images={ images }
-            in_reply_to_status={ in_reply_to_status } />
+            images={ images } />
 }

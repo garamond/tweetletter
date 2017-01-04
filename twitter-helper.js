@@ -21,4 +21,3 @@ function printFriends() {
       console.error(err)
     )
 }
-
