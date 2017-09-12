@@ -29,12 +29,13 @@ getFeeds()
     feeds.map( feed => {
       twitter.get('statuses/user_timeline', { screen_name: feed, count: 200, since_id: state[feed] })
         .then( res => {
-          const ids = res.data.map(d => d.id_str).slice().sort();
+          const ids = res.data.map(d => d.id_str)
+            .slice().sort();
           state = R.assoc(feed, R.last(ids) || state[feed], state);
           return res;
         })
         .then( res => {
-          const tweets = res.data
+          const tweets = res.data.filter(d => d.in_reply_to_status_id===null)
           if (tweets.length > 0) {
             const message = {
               from,

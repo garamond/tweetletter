@@ -1,5 +1,5 @@
 import Twit from 'twit';
-import * as lib from './src/lib'
+import * as lib from './src/io'
 
 const { api } = lib.readJson('config.json');
 const twitter = new Twit(api);
@@ -21,3 +21,5 @@ function printFriends() {
       console.error(err)
     )
 }
+
+//writeStatus('907435346438303744')
