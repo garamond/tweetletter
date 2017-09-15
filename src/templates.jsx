@@ -33,7 +33,7 @@ Tweet.propTypes = {
 
 function linkify(text: string): string {
   const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/g
-  const twitterRegex = /@(\S+)/g
+  const twitterRegex = /@(\w+)/g
   const hashtagRegex = /#(\S+)/g
   return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a>`)
              .replace(twitterRegex, '<a href=https://twitter.com/$1>@$1</a>')
@@ -57,7 +57,7 @@ function renderTweet(tweet: Object): Object {
     entities: {media=[]}
   } = tweet
   const finalText = retweeted_status 
-    ? `RT @${retweeted_status.user.screen_name}: ${retweeted_status.text}`
+    ? `RT @${retweeted_status.user.screen_name} ${retweeted_status.text}`
     : text 
   const images = media.filter(m => m.type==='photo')
   return <Tweet key={ id_str }
