@@ -31,11 +31,27 @@ Tweet.propTypes = {
   images: React.PropTypes.array,
 }
 
-function linkify(text: string): string {
+function getText(tweet: Object): string {
+  const {
+    text,
+    retweeted_status,
+    entities: {
+      urls=[]
+    }
+  } = tweet
+
+  let finalText = retweeted_status 
+    ? `RT @${retweeted_status.user.screen_name}: ${retweeted_status.text}`
+    : text
+
+  urls.forEach(url => {
+    finalText = finalText.replace(url.url, url.expanded_url)
+  })
+
   const hyperlinkRegex = /(https?|ftp|file)\:\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/g
   const twitterRegex = /@(\w+)/g
   const hashtagRegex = /#(\S+)/g
-  return text.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a>`)
+  return finalText.replace(hyperlinkRegex, (t) => `<a href=${t}>${t}</a>`)
              .replace(twitterRegex, '<a href=https://twitter.com/$1>@$1</a>')
              .replace(hashtagRegex, '<a href=https://twitter.com/hashtag/$1>#$1</a>')
 }
@@ -47,24 +63,21 @@ export function renderMessage(feed: string, tweets: Array<Object>): string {
 function renderTweet(tweet: Object): Object {
   const {
     id_str,
-    retweeted_status,
     user: {
       name,
       screen_name
     },
-    text,
     created_at,
-    entities: {media=[]}
+    entities: {
+      media=[],
+    }
   } = tweet
-  const finalText = retweeted_status 
-    ? `RT @${retweeted_status.user.screen_name} ${retweeted_status.text}`
-    : text 
   const images = media.filter(m => m.type==='photo')
   return <Tweet key={ id_str }
             feed={ screen_name }
             name={ name }
             id={ id_str }
-            text={ linkify(finalText) }
+            text={ getText(tweet) }
             date={ created_at }
             images={ images } />
 }
